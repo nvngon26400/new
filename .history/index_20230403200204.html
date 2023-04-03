@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tô Tô & Ngôn Ngôn</title>
+    <script src="style.css"></script>
+    <style>
+      /* RESET RULES
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+      :root {
+        --black: #1a1a1a;
+        --white: #fff;
+        --gray: #ccc;
+        --darkgreen: #18846c;
+        --lightbrown: antiquewhite;
+        --darkblack: rgba(0, 0, 0, 0.8);
+        --minRangeValue: 280px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        outline: none;
+        border: none;
+      }
+
+      button {
+        cursor: pointer;
+        background: none;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        transition: 0.5s all;
+        cursor: pointer;
+      }
+
+      img:hover {
+        transform: scale(1.1);
+        border-radius: 10px;
+        transition: 0.5s all;
+      }
+
+      ol,
+      ul {
+        list-style: none;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      body {
+        margin: 50px 0;
+        color: var(--black);
+        font: 1rem/1.3 sans-serif;
+      }
+
+      .gallery {
+        padding: 0 2rem;
+      }
+
+      .container {
+        max-width: 1030px;
+        margin: 0 auto;
+      }
+
+      .d-none {
+        display: none;
+      }
+
+      /* TOOLBAR
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .toolbar .search-wrapper {
+        position: relative;
+      }
+
+      .toolbar input[type="search"] {
+        font-size: 1.1rem;
+        border: none;
+        border-bottom: 1px solid;
+        padding-bottom: 3px;
+      }
+
+      .toolbar ::placeholder {
+        color: var(--gray);
+      }
+
+      .toolbar .counter {
+        position: absolute;
+        left: 0;
+        top: calc(100% + 5px);
+        font-size: 0.9rem;
+        color: var(--gray);
+      }
+
+      .view-options {
+        display: flex;
+        align-items: center;
+      }
+
+      .view-options li:not(:last-child) {
+        margin-right: 1.2rem;
+      }
+
+      .view-options button {
+        padding: 2px;
+        border: 3px solid transparent;
+      }
+
+      .view-options .active button {
+        border-color: var(--darkgreen);
+      }
+
+      /* IMAGE LIST
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+      .image-list {
+        margin: 3rem 0;
+      }
+
+      .image-list li {
+        background: var(--lightbrown);
+        color: var(--darkblack);
+      }
+
+      .image-list p:first-child {
+        font-weight: bold;
+        font-size: 1.15rem;
+      }
+
+      .image-list p:last-child {
+        margin-top: 0.5rem;
+      }
+
+      /* GRID VIEW
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+      .grid-view {
+        display: grid;
+        grid-gap: 2rem;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(var(--minRangeValue), 1fr)
+        );
+      }
+
+      .grid-view figcaption {
+        padding: 1rem;
+      }
+
+      /* LIST VIEW
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+      .list-view li + li {
+        margin-top: 1.5rem;
+      }
+
+      .list-view figure {
+        display: grid;
+        grid-gap: 1.5rem;
+        grid-template-columns: 150px 1fr;
+        align-items: center;
+      }
+
+      /* FOOTER
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+      footer {
+        font-size: 1rem;
+        padding: 0 1.5rem;
+        text-align: right;
+      }
+
+      footer span {
+        color: #e31b23;
+      }
+
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 9999;
+        display: none;
+        border-radius: 20px;
+        background-color: #ffda76;
+      }
+
+      .popup button {
+        margin-top: 10px;
+        border: 1px solid rgb(255, 255, 255);
+        padding: 10px 20px;
+        background-color: #effffc;
+        border-radius: 20px;
+      }
+
+      .popup button:hover {
+        background-color: #ffd000;
+        transition: 0.4s all;
+      }
+
+      .popup.active {
+        display: block;
+      }
+
+      /* MQ
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+      @media screen and (max-width: 900px) {
+        .toolbar input[type="range"] {
+          display: none;
+        }
+      }
+
+      @media screen and (max-width: 700px) {
+        .grid-view li {
+          text-align: center;
+          padding: 0.5rem;
+        }
+
+        .grid-view figcaption {
+          padding: 0.5rem 0 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="popup" id="welcome-popup">
+      <p>Xin chào! Chào mừng bạn <b>Tô Tô</b> đã đến với album ảnh ^^</p>
+      <button onclick="closePopup()">Đóng</button>
+    </div>
+    <section class="gallery">
+      <div class="container">
+        <div class="toolbar">
+          <div class="search-wrapper">
+            <input type="search" placeholder="Tìm kiếm hình ở đây nè" />
+            <div class="counter">Tổng số ảnh tự sướng: <span>12</span></div>
+          </div>
+          <ul class="view-options">
+            <li class="zoom">
+              <input type="range" min="180" max="380" value="280" />
+            </li>
+            <li class="show-grid active">
+              <button disabled>
+                <img
+                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/grid-view.svg"
+                  alt="grid view"
+                />
+              </button>
+            </li>
+            <li class="show-list">
+              <button>
+                <img
+                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/list-view.svg"
+                  alt="list view"
+                />
+              </button>
+            </li>
+          </ul>
+        </div>
+        <ol class="image-list grid-view">
+          <li>
+            <figure>
+              <img src="images/1.jpg" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/2.jpg" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/3.jpeg" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/4.jpg" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/5.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/6.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/7.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li>
+            <figure>
+              <img src="images/9.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/10.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/11.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/12.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/13.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/14.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/15.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/16.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/17.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/18.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/19.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/20.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/21.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/22.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/23.jpg" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/24.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/25.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/26.PNG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/27.PNG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/28.PNG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/29.PNG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+
+          <li>
+            <figure>
+              <img src="images/32.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/33.JPG" alt="" />
+              <figcaption>
+                <p></p>
+                <p>
+                  Photo by
+                  <a target="_blank">Ngôn Nguyễn</a>
+                </p>
+              </figcaption>
+            </figure>
+          </li>
+
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <small
+          >Made with <span>❤</span> by
+          <a target="_blank">Ngôn Ngôn 🤣🤣🤣</a>
+        </small>
+      </div>
+    </footer>
+    <script src="jsv.js"></script>
+    <script>
+      function closePopup() {
+        document.getElementById("welcome-popup").classList.remove("active");
+      }
+
+      document.getElementById("welcome-popup").classList.add("active");
+    </script>
+  </body>
+</html>
